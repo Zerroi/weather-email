@@ -65,22 +65,28 @@ type Config struct {
 	EmailFrom string   // 发件邮箱
 	EmailPass string   // 邮箱密码/授权码
 	SMTPHost  string   // SMTP服务器地址
-	SMTPPort  int      // SMTP端口
+	SMTPPort  string      // SMTP端口
 	EmailTo   []string // 收件人列表
 	CronSpec  string   // 定时规则
 }
 
 func main() {
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
+	emailFrom := os.Getenv("EMAIL_FROM")
+	emailPass := os.Getenv("EMAIL_PASS")
+	apiKey := os.Getenv("WEATHER_API_KEY")
+
 	config := Config{
-		APIKey:    "6e2b4d4d8b0f4f3f8b0f4f3f8b0f4f3f",
+		APIKey:    apiKey,
 		APIURL:    "http://t.weather.itboy.net/api/weather/city/",
 		CityCode:  "101280601",
-		EmailFrom: "zerroi@foxmail.com",
-		EmailPass: "advxhulobqrshjgj", // 邮箱密码/授权码
-		SMTPHost:  "smtp.qq.com",
-		SMTPPort:  465,
+		EmailFrom: emailFrom,
+		EmailPass: emailPass, // 邮箱密码/授权码
+		SMTPHost:  smtpHost,
+		SMTPPort:  smtpPort,
 		EmailTo:   []string{"zerroi@foxmail.com"},
-		CronSpec:  "30 7 * * *", // 每天上午8点执行
+		CronSpec:  "30 7 * * *", // 每天上午7.30点执行
 	}
 	c := cron.New()
 	// 添加定时任务
