@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
-	"github.com/robfig/cron/v3"
 	"gopkg.in/gomail.v2"
 	"log"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -65,7 +66,7 @@ type Config struct {
 	EmailFrom string   // 发件邮箱
 	EmailPass string   // 邮箱密码/授权码
 	SMTPHost  string   // SMTP服务器地址
-	SMTPPort  string      // SMTP端口
+	SMTPPort  int      // SMTP端口
 	EmailTo   []string // 收件人列表
 	CronSpec  string   // 定时规则
 }
@@ -77,6 +78,10 @@ func main() {
 	emailPass := os.Getenv("EMAIL_PASS")
 	apiKey := os.Getenv("WEATHER_API_KEY")
 
+	port, err := strconv.Atoi(smtpPort)
+	if err != nil {
+		port = 25
+	}
 	config := Config{
 		APIKey:    apiKey,
 		APIURL:    "http://t.weather.itboy.net/api/weather/city/",
@@ -84,29 +89,29 @@ func main() {
 		EmailFrom: emailFrom,
 		EmailPass: emailPass, // 邮箱密码/授权码
 		SMTPHost:  smtpHost,
-		SMTPPort:  smtpPort,
+		SMTPPort:  port,
 		EmailTo:   []string{"zerroi@foxmail.com"},
 		CronSpec:  "30 7 * * *", // 每天上午7.30点执行
 	}
-	c := cron.New()
+	/*c := cron.New()
 	// 添加定时任务
-	_, err := c.AddFunc(config.CronSpec, func() {
+	_, err = c.AddFunc(config.CronSpec, func() {
 		log.Println("开始执行天气预报邮件发送任务...")
 		sendDailyWeatherReport(config)
 	})
 	if err != nil {
 		log.Fatalf("添加定时任务失败: %v", err)
-	}
+	}*/
 
-	// 立即执行一次（可选）
-	//go sendDailyWeatherReport(config)
+	//立即执行一次（可选）
+	go sendDailyWeatherReport(config)
 
 	// 启动定时任务
-	c.Start()
-	log.Printf("定时任务已启动，将在每天 %s 执行\n", config.CronSpec)
+	//c.Start()
+	//log.Printf("定时任务已启动，将在每天 %s 执行\n", config.CronSpec)
 
 	// 保持程序运行
-	select {}
+	//select {}
 }
 
 func sendDailyWeatherReport(config Config) {

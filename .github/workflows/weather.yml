@@ -1,0 +1,41 @@
+name: Daily Weather Email
+on:
+  schedule:
+    # 每天 UTC 时间 8:00 运行（北京时间 16:00）
+    - cron: '30 7 * * *'
+  # 允许手动触发（在 GitHub Actions 页面点击运行）
+  workflow_dispatch:
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 拉取代码到虚拟机
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 设置 Go 环境
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'  # 指定 Go 版本
+
+      # 3. 运行天气邮件程序（通过环境变量传递 Secrets）
+      - name: Run Weather Mailer
+        env:
+          # 从 GitHub Secrets 注入敏感信息
+          API_KEY: ${{ secrets.WEATHER_API_KEY }}
+          API_URL: ${{ secrets.WEATHER_API_URL || 'http://t.weather.itboy.net/api/weather/city/' }}
+          CITY_CODE: ${{ secrets.WEATHER_CITY_CODE }}
+
+          # SMTP 配置
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          # 打印非敏感信息（调试用）
+          echo "Running for city code: $CITY_CODE"
+          # 执行 Go 程序
+          go run main.go
