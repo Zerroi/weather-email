@@ -78,6 +78,12 @@ func main() {
 	emailPass := os.Getenv("EMAIL_PASS")
 	apiKey := os.Getenv("WEATHER_API_KEY")
 
+	fmt.Println("SMTP_HOST:", smtpHost)
+	fmt.Println("SMTP_PORT:", smtpPort)
+	fmt.Println("EMAIL_FROM:", emailFrom)
+	fmt.Println("EMAIL_PASS:", emailPass)
+	fmt.Println("WEATHER_API_KEY:", apiKey)
+
 	port, err := strconv.Atoi(smtpPort)
 	if err != nil {
 		port = 25
