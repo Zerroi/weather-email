@@ -6,8 +6,6 @@ import (
 	"github.com/go-resty/resty/v2"
 	"gopkg.in/gomail.v2"
 	"log"
-	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -72,30 +70,15 @@ type Config struct {
 }
 
 func main() {
-	smtpHost := os.Getenv("SMTP_HOST")
-	smtpPort := os.Getenv("SMTP_PORT")
-	emailFrom := os.Getenv("EMAIL_FROM")
-	emailPass := os.Getenv("EMAIL_PASS")
-	apiKey := os.Getenv("WEATHER_API_KEY")
 
-	fmt.Println("SMTP_HOST:", smtpHost)
-	fmt.Println("SMTP_PORT:", smtpPort)
-	fmt.Println("EMAIL_FROM:", emailFrom)
-	fmt.Println("EMAIL_PASS:", emailPass)
-	fmt.Println("WEATHER_API_KEY:", apiKey)
-
-	port, err := strconv.Atoi(smtpPort)
-	if err != nil {
-		port = 25
-	}
 	config := Config{
-		APIKey:    apiKey,
+		APIKey:    "",
 		APIURL:    "http://t.weather.itboy.net/api/weather/city/",
 		CityCode:  "101280601",
-		EmailFrom: emailFrom,
-		EmailPass: emailPass, // 邮箱密码/授权码
-		SMTPHost:  smtpHost,
-		SMTPPort:  port,
+		EmailFrom: "zerroi@foxmail.com",
+		EmailPass: "advxhulobqrshjgj", // 邮箱密码/授权码
+		SMTPHost:  "smtp.qq.com",
+		SMTPPort:  465,
 		EmailTo:   []string{"zerroi@foxmail.com"},
 		CronSpec:  "30 7 * * *", // 每天上午7.30点执行
 	}
