@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
+	"github.com/robfig/cron/v3"
 	"gopkg.in/gomail.v2"
 	"log"
 	"strings"
@@ -82,25 +83,25 @@ func main() {
 		EmailTo:   []string{"zerroi@foxmail.com"},
 		CronSpec:  "30 7 * * *", // 每天上午7.30点执行
 	}
-	/*c := cron.New()
+	c := cron.New()
 	// 添加定时任务
-	_, err = c.AddFunc(config.CronSpec, func() {
+	_, err := c.AddFunc(config.CronSpec, func() {
 		log.Println("开始执行天气预报邮件发送任务...")
 		sendDailyWeatherReport(config)
 	})
 	if err != nil {
 		log.Fatalf("添加定时任务失败: %v", err)
-	}*/
+	}
 
 	//立即执行一次（可选）
 	go sendDailyWeatherReport(config)
 
-	// 启动定时任务
-	//c.Start()
-	//log.Printf("定时任务已启动，将在每天 %s 执行\n", config.CronSpec)
+	//启动定时任务
+	c.Start()
+	log.Printf("定时任务已启动，将在每天 %s 执行\n", config.CronSpec)
 
-	// 保持程序运行
-	//select {}
+	//保持程序运行
+	select {}
 }
 
 func sendDailyWeatherReport(config Config) {
