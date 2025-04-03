@@ -1,24 +1,18 @@
-# 使用 Golang 作为构建环境
-FROM golang:1.20 AS builder
-
-# 设置工作目录
+# 构建阶段
+FROM golang:1.22.12 AS builder
+ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /app
-
-# 复制项目文件并下载依赖
 COPY go.mod go.sum ./
 RUN go mod download
-
-# 复制源码并编译
 COPY . .
-RUN go build -o gin-app .
+# 关键修改：禁用 CGO + 静态编译
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o gin-app .
 
-# 轻量级运行环境
+# 运行阶段
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
-
-# 设置工作目录
 WORKDIR /root/
 COPY --from=builder /app/gin-app .
-
-# 运行应用
+# 添加执行权限（可选）
+RUN chmod +x gin-app
 CMD ["./gin-app"]

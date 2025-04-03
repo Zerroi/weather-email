@@ -94,7 +94,7 @@ func main() {
 	}
 
 	//立即执行一次（可选）
-	go sendDailyWeatherReport(config)
+	//go sendDailyWeatherReport(config)
 
 	//启动定时任务
 	c.Start()
